@@ -10,9 +10,6 @@ redis==5.0.3
 celery==5.3.6
 
 # --- Machine Learning & Inference ---
---extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.2.1
-transformers==4.38.2
 scikit-learn==1.4.1.post1
 pandas==2.2.1
 numpy==1.26.4
