@@ -1,0 +1,214 @@
+/* ==============================================================================
+   Fake News Detector - Custom Stylesheet (Premium Dark/Light Glassmorphism)
+   ============================================================================== */
+
+:root {
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+  --sidebar-width: 280px;
+  
+  /* HSL Tailored Dark Theme Colors */
+  --bg-custom-dark: #0a0b10;
+  --card-bg-dark: #12141f;
+  --card-border-dark: rgba(255, 255, 255, 0.06);
+  --dropzone-bg-dark: rgba(18, 20, 31, 0.5);
+  
+  /* HSL Tailored Light Theme Colors */
+  --bg-custom-light: #f8fafc;
+  --card-bg-light: #ffffff;
+  --card-border-light: rgba(0, 0, 0, 0.05);
+  --dropzone-bg-light: rgba(241, 245, 249, 0.7);
+  
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Body Styles */
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow: hidden;
+  background-color: var(--bg-custom-dark);
+  transition: var(--transition-smooth);
+}
+
+/* Light Mode Override */
+html[data-bs-theme="light"] body {
+  background-color: var(--bg-custom-light);
+}
+
+.font-display {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Text Gradients */
+.text-gradient {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Sidebar Custom Sizing */
+#sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  transition: var(--transition-smooth);
+}
+
+/* Modern Card Layouts */
+.card-custom {
+  background-color: var(--card-bg-dark);
+  border: 1px solid var(--card-border-dark);
+  border-radius: 16px;
+  transition: var(--transition-smooth);
+}
+
+html[data-bs-theme="light"] .card-custom {
+  background-color: var(--card-bg-light);
+  border: 1px solid var(--card-border-light);
+}
+
+.card-custom:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Dropzone styling for upload page */
+.upload-dropzone {
+  background-color: var(--dropzone-bg-dark);
+  border: 2px dashed rgba(99, 102, 241, 0.3) !important;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+html[data-bs-theme="light"] .upload-dropzone {
+  background-color: var(--dropzone-bg-light);
+}
+
+.upload-dropzone:hover, .upload-dropzone.dragover {
+  border-color: #06b6d4 !important;
+  background-color: rgba(99, 102, 241, 0.08);
+}
+
+/* Status Indicator Dot */
+.status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.status-indicator.bg-success {
+  animation-name: pulse-success;
+}
+
+@keyframes pulse-success {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* Animations for Page Transitions */
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Progress Bars */
+.progress-custom {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+html[data-bs-theme="light"] .progress-custom {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.progress-bar {
+  background: var(--primary-gradient) !important;
+  border-radius: 10px;
+}
+
+/* Chart Canvas sizes */
+.chart-container {
+  position: relative;
+  height: 350px;
+  width: 100%;
+}
+
+/* Icon circles */
+.icon-shape {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+html[data-bs-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Extra small device responsive adjustments */
+@media (max-width: 768px) {
+  .container-fluid {
+    flex-direction: column !important;
+  }
+  #sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+    border-end: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+}

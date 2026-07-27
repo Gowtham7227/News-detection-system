@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Production-ready Fake News Detection System leveraging machine learning." />
+  <title>Fake News Detection Dashboard</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Custom Style Sheet -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+  <div class="container-fluid p-0 d-flex align-items-stretch min-vh-100">
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar" class="bg-dark-subtle border-end d-flex flex-column align-items-stretch p-3">
+      <div class="sidebar-header d-flex align-items-center gap-2 mb-4">
+        <i class="bi bi-shield-check text-primary fs-3"></i>
+        <span class="fs-5 fw-bold font-display branding-text">DocSecure</span>
+      </div>
+
+      <ul class="nav nav-pills flex-column mb-auto gap-2">
+        <li class="nav-item">
+          <button class="nav-link active w-100 text-start d-flex align-items-center gap-2" data-page="home">
+            <i class="bi bi-grid-1x2-fill"></i> Home
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link w-100 text-start d-flex align-items-center gap-2" data-page="predict">
+            <i class="bi bi-blockquote-left"></i> Text Predict
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link w-100 text-start d-flex align-items-center gap-2" data-page="upload">
+            <i class="bi bi-file-earmark-arrow-up-fill"></i> Document Upload
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link w-100 text-start d-flex align-items-center gap-2" data-page="metrics">
+            <i class="bi bi-bar-chart-line-fill"></i> Model Metrics
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link w-100 text-start d-flex align-items-center gap-2" data-page="history">
+            <i class="bi bi-clock-history"></i> Log History
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link w-100 text-start d-flex align-items-center gap-2" data-page="about">
+            <i class="bi bi-info-circle-fill"></i> About System
+          </button>
+        </li>
+      </ul>
+
+      <hr>
+
+      <!-- Theme Selector & API Health -->
+      <div class="sidebar-footer">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="small text-muted">Theme</span>
+          <button id="themeToggle" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-sun-fill" id="themeIcon"></i>
+          </button>
+        </div>
+        <div class="d-flex align-items-center gap-2 small">
+          <span class="status-indicator bg-danger" id="apiStatusDot"></span>
+          <span id="apiStatusText" class="text-muted">API Offline</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content Dashboard Container -->
+    <main class="flex-grow-1 p-4 overflow-y-auto" id="mainContent">
+
+      <!-- ================= HOME PAGE ================= -->
+      <section id="page-home" class="page-section fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="font-display fw-bold text-gradient">Dashboard Overview</h2>
+            <p class="text-muted mb-0">Overview of active classification model performance and analysis logs.</p>
+          </div>
+        </div>
+
+        <!-- Summary Cards Row -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-3">
+            <div
+              class="card card-custom p-3 border-0 shadow-sm d-flex flex-row align-items-center justify-content-between">
+              <div>
+                <h6 class="text-muted small text-uppercase">Total Requests</h6>
+                <h3 class="fw-bold mb-0" id="statTotalRequests">0</h3>
+              </div>
+              <div class="icon-shape bg-primary-subtle text-primary rounded-3 p-3">
+                <i class="bi bi-telephone-inbound fs-4"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div
+              class="card card-custom p-3 border-0 shadow-sm d-flex flex-row align-items-center justify-content-between">
+              <div>
+                <h6 class="text-muted small text-uppercase">Fake News Rate</h6>
+                <h3 class="fw-bold mb-0" id="statFakeRate">0%</h3>
+              </div>
+              <div class="icon-shape bg-warning-subtle text-warning rounded-3 p-3">
+                <i class="bi bi-virus fs-4"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div
+              class="card card-custom p-3 border-0 shadow-sm d-flex flex-row align-items-center justify-content-between">
+              <div>
+                <h6 class="text-muted small text-uppercase">Model F1-Score</h6>
+                <h3 class="fw-bold mb-0" id="statModelF1">0.00</h3>
+              </div>
+              <div class="icon-shape bg-success-subtle text-success rounded-3 p-3">
+                <i class="bi bi-award fs-4"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div
+              class="card card-custom p-3 border-0 shadow-sm d-flex flex-row align-items-center justify-content-between">
+              <div>
+                <h6 class="text-muted small text-uppercase">Active Model</h6>
+                <h3 class="fs-5 fw-bold mb-0 text-truncate" style="max-width: 150px;" id="statModelName">None</h3>
+              </div>
+              <div class="icon-shape bg-info-subtle text-info rounded-3 p-3">
+                <i class="bi bi-cpu fs-4"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <!-- Left Chart -->
+          <div class="col-md-8">
+            <div class="card card-custom p-4 border-0 shadow-sm">
+              <h5 class="fw-bold mb-4 font-display">Classification Distribution</h5>
+              <div class="chart-container">
+                <canvas id="distributionChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Actions/Info -->
+          <div class="col-md-4">
+            <div class="card card-custom p-4 border-0 shadow-sm h-100">
+              <h5 class="fw-bold mb-4 font-display">Quick Operations</h5>
+              <div class="d-grid gap-3">
+                <button class="btn btn-primary d-flex align-items-center justify-content-center gap-2 py-2"
+                  data-nav="predict">
+                  <i class="bi bi-pencil-square"></i> Write Text Predict
+                </button>
+                <button class="btn btn-outline-info d-flex align-items-center justify-content-center gap-2 py-2"
+                  data-nav="upload">
+                  <i class="bi bi-cloud-arrow-up"></i> Upload Document
+                </button>
+                <button class="btn btn-outline-warning d-flex align-items-center justify-content-center gap-2 py-2"
+                  data-nav="metrics">
+                  <i class="bi bi-arrow-repeat"></i> Train Pipeline
+                </button>
+              </div>
+              <div class="mt-4 pt-3 border-top">
+                <h6 class="fw-bold text-muted small text-uppercase mb-3">Model Properties</h6>
+                <ul class="list-unstyled small mb-0 d-flex flex-column gap-2 text-secondary">
+                  <li class="d-flex justify-content-between"><span>Vectorizer:</span><span id="modelInfoVec">N/A</span>
+                  </li>
+                  <li class="d-flex justify-content-between"><span>Max Features:</span><span id="modelInfoMax">0</span>
+                  </li>
+                  <li class="d-flex justify-content-between"><span>Last Trained:</span><span
+                      id="modelInfoTrained">Never</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TEXT PREDICTION PAGE ================= -->
+      <section id="page-predict" class="page-section d-none fade-in">
+        <div class="mb-4">
+          <h2 class="font-display fw-bold text-gradient">Text Analysis</h2>
+          <p class="text-muted">Paste raw news body text below to compute authenticity validation ratings.</p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-7">
+            <div class="card card-custom p-4 border-0 shadow-sm">
+              <form id="predictForm">
+                <div class="mb-3">
+                  <label for="predictText" class="form-label fw-bold">Article Text Body</label>
+                  <textarea class="form-control" id="predictText" rows="12"
+                    placeholder="Paste article paragraphs here (min 10 characters)..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary px-4 py-2" id="predictBtn">
+                  <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"
+                    id="predictSpinner"></span>
+                  <span id="predictBtnText"><i class="bi bi-shield-fill-check"></i> Analyze Article</span>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-md-5">
+            <div
+              class="card card-custom p-4 border-0 shadow-sm h-100 d-flex flex-column justify-content-center text-center position-relative overflow-hidden"
+              id="predictResultCard">
+
+              <!-- Initial State -->
+              <div id="resultInitialState" class="py-5">
+                <i class="bi bi-clipboard-pulse text-muted display-2 mb-3 d-block"></i>
+                <h4 class="fw-bold font-display">Waiting for input</h4>
+                <p class="text-muted px-4">Provide article body text in the form and click Analyze to view truth
+                  ratings.</p>
+              </div>
+
+              <!-- Result Display State -->
+              <div id="resultOutputState" class="d-none py-4">
+                <div id="resultBadgeContainer" class="mb-4">
+                  <span class="badge rounded-pill px-4 py-2 fs-5" id="resultLabel">Real News</span>
+                </div>
+
+                <div class="mb-4">
+                  <h6 class="text-muted small text-uppercase mb-2">Classifier Confidence</h6>
+                  <h2 class="fw-bold font-display" id="resultConfidence">95.4%</h2>
+                  <div class="progress progress-custom mt-3" style="height: 8px;">
+                    <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0"
+                      aria-valuemax="100" id="resultProgressBar"></div>
+                  </div>
+                </div>
+
+                <div class="alert bg-body-tertiary border-0 text-start small mb-0 mt-4">
+                  <h6 class="fw-bold mb-2">Text Snippet:</h6>
+                  <p class="text-secondary mb-0 italic" id="resultSnippet">...</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= DOCUMENT UPLOAD PAGE ================= -->
+      <section id="page-upload" class="page-section d-none fade-in">
+        <div class="mb-4">
+          <h2 class="font-display fw-bold text-gradient">Document Classification</h2>
+          <p class="text-muted">Upload articles saved as PDF, DOCX, or plain TXT files to verify their credibility.</p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-7">
+            <div class="card card-custom p-4 border-0 shadow-sm text-center">
+              <form id="uploadForm">
+                <div class="upload-dropzone p-5 mb-4 border border-dashed rounded-3 position-relative" id="dropzone">
+                  <i class="bi bi-file-earmark-arrow-up text-primary display-3 mb-3 d-block"></i>
+                  <h5 class="fw-bold">Drag & Drop file here</h5>
+                  <p class="text-muted small mb-3">Supports TXT, PDF, DOCX (Max 5MB)</p>
+                  <button type="button" class="btn btn-sm btn-outline-primary"
+                    onclick="document.getElementById('fileInput').click()">Browse Files</button>
+                  <input type="file" id="fileInput" class="d-none" accept=".txt,.pdf,.docx" required>
+                </div>
+
+                <!-- Selected File Display -->
+                <div id="selectedFileDetails"
+                  class="alert bg-body-tertiary border-0 text-start d-none align-items-center justify-content-between mb-4">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-file-text-fill text-info fs-4"></i>
+                    <div>
+                      <div class="fw-bold text-truncate" style="max-width: 300px;" id="fileNameDisplay">file.pdf</div>
+                      <div class="small text-muted" id="fileSizeDisplay">0 KB</div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-link text-danger p-0" id="clearFileBtn"><i
+                      class="bi bi-trash"></i></button>
+                </div>
+
+                <button type="submit" class="btn btn-primary px-4 py-2 w-100" id="uploadBtn" disabled>
+                  <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"
+                    id="uploadSpinner"></span>
+                  <span id="uploadBtnText"><i class="bi bi-cloud-arrow-up-fill"></i> Upload & Analyze</span>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-md-5">
+            <div
+              class="card card-custom p-4 border-0 shadow-sm h-100 d-flex flex-column justify-content-center text-center"
+              id="uploadResultCard">
+
+              <!-- Initial State -->
+              <div id="uploadResultInitialState" class="py-5">
+                <i class="bi bi-folder-check text-muted display-2 mb-3 d-block"></i>
+                <h4 class="fw-bold font-display">Waiting for Upload</h4>
+                <p class="text-muted px-4">Select a document file and click analyze to extract and classify content.</p>
+              </div>
+
+              <!-- Result Display State -->
+              <div id="uploadResultOutputState" class="d-none py-4">
+                <div id="uploadResultBadgeContainer" class="mb-4">
+                  <span class="badge rounded-pill px-4 py-2 fs-5" id="uploadResultLabel">Real News</span>
+                </div>
+
+                <div class="mb-4">
+                  <h6 class="text-muted small text-uppercase mb-2">Classifier Confidence</h6>
+                  <h2 class="fw-bold font-display" id="uploadResultConfidence">95.4%</h2>
+                  <div class="progress progress-custom mt-3" style="height: 8px;">
+                    <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0"
+                      aria-valuemax="100" id="uploadResultProgressBar"></div>
+                  </div>
+                </div>
+
+                <div class="alert bg-body-tertiary border-0 text-start small mb-0 mt-4">
+                  <h6 class="fw-bold mb-2">Parsed Text Snippet:</h6>
+                  <p class="text-secondary mb-0 italic" id="uploadResultSnippet">...</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MODEL METRICS PAGE ================= -->
+      <section id="page-metrics" class="page-section d-none fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="font-display fw-bold text-gradient">Active Model Performance</h2>
+            <p class="text-muted mb-0">Evaluate test metrics and trigger model retraining pipelines.</p>
+          </div>
+          <button class="btn btn-outline-warning d-flex align-items-center gap-2" id="btnRetrain">
+            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"
+              id="retrainSpinner"></span>
+            <span id="retrainBtnText"><i class="bi bi-arrow-repeat"></i> Retrain Model</span>
+          </button>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <!-- Metric Card -->
+          <div class="col-md-3">
+            <div class="card card-custom p-4 border-0 shadow-sm text-center">
+              <h6 class="text-muted small text-uppercase mb-2">Accuracy</h6>
+              <h1 class="fw-bold font-display text-primary mb-0" id="metricsAcc">0.0%</h1>
+              <p class="small text-muted mt-2 mb-0">Overall ratio of correct predictions.</p>
+            </div>
+          </div>
+          <!-- Metric Card -->
+          <div class="col-md-3">
+            <div class="card card-custom p-4 border-0 shadow-sm text-center">
+              <h6 class="text-muted small text-uppercase mb-2">Precision</h6>
+              <h1 class="fw-bold font-display text-success mb-0" id="metricsPrec">0.0%</h1>
+              <p class="small text-muted mt-2 mb-0">Reliability when classifying real news.</p>
+            </div>
+          </div>
+          <!-- Metric Card -->
+          <div class="col-md-3">
+            <div class="card card-custom p-4 border-0 shadow-sm text-center">
+              <h6 class="text-muted small text-uppercase mb-2">Recall</h6>
+              <h1 class="fw-bold font-display text-info mb-0" id="metricsRec">0.0%</h1>
+              <p class="small text-muted mt-2 mb-0">Ability to identify all real news.</p>
+            </div>
+          </div>
+          <!-- Metric Card -->
+          <div class="col-md-3">
+            <div class="card card-custom p-4 border-0 shadow-sm text-center">
+              <h6 class="text-muted small text-uppercase mb-2">F1-Score</h6>
+              <h1 class="fw-bold font-display text-warning mb-0" id="metricsF1">0.00</h1>
+              <p class="small text-muted mt-2 mb-0">Balanced harmonic mean of metrics.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <!-- Confusion Matrix Plot -->
+          <div class="col-md-6">
+            <div class="card card-custom p-4 border-0 shadow-sm h-100">
+              <h5 class="fw-bold mb-4 font-display">Graphical Confusion Matrix</h5>
+              <div
+                class="d-flex align-items-center justify-content-center h-100 border border-dashed rounded-3 p-3 position-relative min-vh-30">
+                <div class="spinner-border text-primary position-absolute d-none" id="matrixImgSpinner"></div>
+                <img id="confusionMatrixImage" src="" alt="Confusion Matrix Graph" class="img-fluid rounded-3 opacity-0"
+                  style="max-height: 350px;">
+                <div class="text-center text-muted py-5" id="confusionMatrixFallback">
+                  <i class="bi bi-graph-down display-4 mb-3 d-block"></i>
+                  <p class="mb-0">No confusion matrix plot found in reports.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grid Breakdown -->
+          <div class="col-md-6">
+            <div class="card card-custom p-4 border-0 shadow-sm h-100">
+              <h5 class="fw-bold mb-4 font-display">Numerical Matrix Metrics</h5>
+              <div class="table-responsive">
+                <table class="table table-bordered align-middle text-center mb-0 mt-3 font-display">
+                  <thead>
+                    <tr>
+                      <th>Actual \ Predicted</th>
+                      <th class="bg-danger-subtle text-danger">Predicted Fake</th>
+                      <th class="bg-success-subtle text-success">Predicted Real</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="fw-bold">Actual Fake</td>
+                      <td><span class="badge bg-secondary fs-5" id="matTN">0</span><br><small class="text-muted">True
+                          Negative</small></td>
+                      <td><span class="badge bg-secondary fs-5" id="matFP">0</span><br><small class="text-muted">False
+                          Positive</small></td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold">Actual Real</td>
+                      <td><span class="badge bg-secondary fs-5" id="matFN">0</span><br><small class="text-muted">False
+                          Negative</small></td>
+                      <td><span class="badge bg-secondary fs-5" id="matTP">0</span><br><small class="text-muted">True
+                          Positive</small></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= LOG HISTORY PAGE ================= -->
+      <section id="page-history" class="page-section d-none fade-in">
+        <div class="mb-4">
+          <h2 class="font-display fw-bold text-gradient">Inference History Logs</h2>
+          <p class="text-muted">List of recent truth evaluations computed on client requests.</p>
+        </div>
+
+        <div class="card card-custom border-0 shadow-sm p-4">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="historyTable">
+              <thead class="table-dark-subtle">
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Analyzed Content Snippet</th>
+                  <th scope="col">Source File</th>
+                  <th scope="col">Predicted Label</th>
+                  <th scope="col">Confidence</th>
+                  <th scope="col">Timestamp</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">Loading history logs...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Controls -->
+          <div class="d-flex justify-content-between align-items-center mt-4">
+            <span class="small text-muted" id="historyPaginationText">Showing 0-0</span>
+            <div class="btn-group">
+              <button class="btn btn-sm btn-outline-secondary" id="historyPrevBtn" disabled><i
+                  class="bi bi-chevron-left"></i> Previous</button>
+              <button class="btn btn-sm btn-outline-secondary" id="historyNextBtn" disabled>Next <i
+                  class="bi bi-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ABOUT SYSTEM PAGE ================= -->
+      <section id="page-about" class="page-section d-none fade-in">
+        <div class="mb-4">
+          <h2 class="font-display fw-bold text-gradient">About DocSecure</h2>
+          <p class="text-muted">Machine learning architectures and technical pipelines inside the Fake News Detector.
+          </p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-8">
+            <div class="card card-custom p-4 border-0 shadow-sm mb-4">
+              <h5 class="fw-bold mb-3 font-display">How the Pipeline Works</h5>
+              <p class="text-secondary leading-relaxed">
+                DocSecure converts raw news texts into numerical features utilizing advanced Term Frequency-Inverse
+                Document Frequency (TF-IDF) transformations.
+                Once vectorized, these mathematical signatures are evaluated against trained classifiers to compute
+                classification labels and metrics.
+              </p>
+              <div class="row g-3 mt-3">
+                <div class="col-md-6">
+                  <div class="p-3 bg-body-tertiary rounded-3">
+                    <h6 class="fw-bold text-primary"><i class="bi bi-chat-left-text"></i> Preprocessing</h6>
+                    <p class="small text-muted mb-0">Punctuation cleanings, lowercasing, NLTK stopwords exclusion, and
+                      WordNet token lemmatization.</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 bg-body-tertiary rounded-3">
+                    <h6 class="fw-bold text-success"><i class="bi bi-vector-pen"></i> TF-IDF Features</h6>
+                    <p class="small text-muted mb-0">Extracting unigrams and bigrams from cleaned text content to
+                      isolate unique vocabulary terms.</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 bg-body-tertiary rounded-3">
+                    <h6 class="fw-bold text-warning"><i class="bi bi-cpu"></i> Ensemble Classifiers</h6>
+                    <p class="small text-muted mb-0">Comparing Random Forests, SVMs, Naive Bayes, and Logistic
+                      Regression models to deploy the best pipeline.</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 bg-body-tertiary rounded-3">
+                    <h6 class="fw-bold text-info"><i class="bi bi-hdd-network"></i> Database Logging</h6>
+                    <p class="small text-muted mb-0">Integrating transactions, file parsing, and classification outputs
+                      into secure SQLite databases.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card card-custom p-4 border-0 shadow-sm h-100 text-center">
+              <i class="bi bi-laptop display-3 text-gradient mb-3"></i>
+              <h5 class="fw-bold font-display">System Blueprint</h5>
+              <p class="text-muted small">FastAPI Backend + SQLite + Chart.js + Bootstrap 5 Frontend. Designed for low
+                latency inference and containerized environments.</p>
+              <div class="alert alert-secondary border-0 mt-4 small text-start mb-0">
+                <strong>Version:</strong> v1.0.0<br>
+                <strong>OS Compatibility:</strong> Linux, Windows, macOS<br>
+                <strong>Author:</strong> Senior ML & Full Stack Engineer
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+  <!-- Custom Application Script -->
+  <script src="/app.js"></script>
+</body>
+
+</html>
