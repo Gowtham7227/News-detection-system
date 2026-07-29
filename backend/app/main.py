@@ -2,10 +2,30 @@ import os
 import sys
 import logging
 
-# Ensure project root is in the Python PATH so sibling model directory can be imported
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-if PROJECT_ROOT not in sys.path:
-    sys.path.append(PROJECT_ROOT)
+# ==============================================================================
+# Path setup: ensure the project root (containing the `model/` package)
+# is always on sys.path regardless of where uvicorn is launched from.
+# - Render/Docker runs `uvicorn app.main:app` from inside /app (backend dir)
+#   so the `model/` package is at /app/../model → i.e. one dir above /app
+# - Local dev may run from the repo root so model/ is already importable
+# ==============================================================================
+_THIS_FILE = os.path.abspath(__file__)           # .../backend/app/main.py
+_BACKEND_DIR = os.path.dirname(os.path.dirname(_THIS_FILE))   # .../backend/
+_PROJECT_ROOT = os.path.dirname(_BACKEND_DIR)    # .../fake-news-detection-system/
+
+for _path in [_PROJECT_ROOT, _BACKEND_DIR]:
+    if _path not in sys.path:
+        sys.path.insert(0, _path)
+
+# ==============================================================================
+# Download required NLTK data at startup (idempotent — skipped if already cached)
+# ==============================================================================
+import nltk
+for _corpus in ['stopwords', 'wordnet', 'omw-1.4']:
+    try:
+        nltk.data.find(f'corpora/{_corpus}')
+    except LookupError:
+        nltk.download(_corpus, quiet=True)
 
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
@@ -82,7 +102,7 @@ async def health_check():
         logger.error(f"Healthcheck database connection error: {e}")
 
     # Check if models are trained
-    model_ok = os.path.exists(os.path.join(PROJECT_ROOT, "model/artifacts", "best_model.pkl"))
+    model_ok = os.path.exists(os.path.join(_PROJECT_ROOT, "model", "artifacts", "best_model.pkl"))
 
     status_code = status.HTTP_200_OK if db_ok else status.HTTP_503_SERVICE_UNAVAILABLE
 

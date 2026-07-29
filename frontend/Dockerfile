@@ -18,12 +18,12 @@ RUN npm run build
 # Production runner stage with Nginx
 FROM nginx:1.25-alpine AS runner
 
+# Remove default nginx config and replace with our SPA + proxy config
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Copy built assets
 COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Copy custom nginx configuration (optional but recommended for SPA routing)
-# RUN rm /etc/nginx/conf.d/default.conf
-# COPY nginx.conf /etc/nginx/conf.d
 
 EXPOSE 80
 

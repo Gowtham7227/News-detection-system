@@ -1,0 +1,62 @@
+services:
+  # ============================================================
+  # Backend — FastAPI Python Web Service
+  # Runs from project root so model/ package is importable
+  # ============================================================
+  - type: web
+    name: fake-news-backend
+    runtime: python
+    region: oregon
+    plan: free
+    rootDir: .                             # Project root — gives access to model/ package
+    buildCommand: pip install --upgrade pip && pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SECRET_KEY
+        generateValue: true
+      # Leave DATABASE_URL empty → falls back to SQLite (stored on disk below)
+      - key: DATABASE_URL
+        value: sqlite:////data/fakenews.db
+      - key: UPLOAD_DIR
+        value: /data/uploads
+      - key: BACKEND_CORS_ORIGINS
+        value: ""                          # Fill in your frontend URL after first deploy
+    disk:
+      name: backend-data
+      mountPath: /data
+      sizeGB: 1
+
+  # ============================================================
+  # Frontend — Vite Static Site (served by Render CDN)
+  # ============================================================
+  - type: web
+    name: fake-news-frontend
+    runtime: static
+    region: oregon
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      # Proxy /api/* and /health to the backend (Render Rewrite Rules)
+      - type: rewrite
+        source: /api/*
+        destination: https://fake-news-backend.onrender.com/api/:splat
+      - type: rewrite
+        source: /health
+        destination: https://fake-news-backend.onrender.com/health
+      # SPA catch-all — serve index.html for all non-asset routes
+      - type: rewrite
+        source: /*
+        destination: /index.html

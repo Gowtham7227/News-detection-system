@@ -1,9 +1,6 @@
-from model.preprocessing import TextPreprocessor
-from model.dataset_loader import DatasetLoader
-from model.feature_extraction import FeatureExtractor
-from model.train import ModelTrainer
-from model.evaluate import ModelEvaluator
-from model.predict import FakeNewsPredictor
+# model/__init__.py
+# Sub-modules are imported lazily to prevent startup crashes when
+# optional dependencies (NLTK data, sklearn, joblib artifacts) are missing.
 
 __all__ = [
     "TextPreprocessor",

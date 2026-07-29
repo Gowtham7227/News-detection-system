@@ -3,8 +3,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Default to local SQLite database for integration simplicity
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./fakenews.db")
+from app.core.config import settings
+
+# Resolve effective database URL (respects DATABASE_URL env var set by Render)
+DATABASE_URL = settings.EFFECTIVE_DATABASE_URL
 
 # For SQLite, check_same_thread is needed because FastAPI uses multiple threads
 connect_args = {}

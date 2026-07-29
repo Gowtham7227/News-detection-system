@@ -1,5 +1,5 @@
 import os
-from typing import List, Union
+from typing import List, Union, Optional
 from pydantic import AnyHttpUrl, BeforeValidator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Annotated
@@ -7,7 +7,7 @@ from typing_extensions import Annotated
 
 def parse_cors_origins(v: Union[str, List[str]]) -> List[str]:
     if isinstance(v, str) and not v.startswith("["):
-        return [i.strip() for i in v.split(",")]
+        return [i.strip() for i in v.split(",") if i.strip()]
     elif isinstance(v, (list, str)):
         import json
         try:
@@ -35,7 +35,12 @@ class Settings(BaseSettings):
         List[str], BeforeValidator(parse_cors_origins)
     ] = []
 
-    # Database Settings
+    # --- Database ---
+    # Render injects DATABASE_URL directly for Postgres addons.
+    # Falls back to SQLite if not set (good for free-tier / demo deployments).
+    DATABASE_URL: Optional[str] = None
+
+    # Legacy Postgres fields (used only when DATABASE_URL is not set)
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgrespassword"
@@ -43,23 +48,26 @@ class Settings(BaseSettings):
     POSTGRES_PORT: int = 5432
 
     @property
-    def DATABASE_URL(self) -> str:
-        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+    def EFFECTIVE_DATABASE_URL(self) -> str:
+        if self.DATABASE_URL:
+            return self.DATABASE_URL
+        # Default to SQLite for zero-config deployments
+        return "sqlite:///./fakenews.db"
 
-    # Redis Settings
+    # Redis Settings (optional — only needed if Celery is used)
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
 
     # ML Config
-    MODEL_TYPE: str = "transformer"
-    MODEL_PATH: str = "/app/model/artifacts/fake_news_bert_v1"
+    MODEL_TYPE: str = "tfidf"
+    MODEL_PATH: str = "/app/model/artifacts"
     MAX_SEQUENCE_LENGTH: int = 512
     CONFIDENCE_THRESHOLD: float = 0.75
 
     # File Storage Settings
     MAX_UPLOAD_SIZE_MB: int = 5
-    UPLOAD_DIR: str = "/app/uploads"
+    UPLOAD_DIR: str = "/data/uploads"
     ALLOWED_EXTENSIONS: List[str] = ["txt", "pdf", "docx"]
 
 

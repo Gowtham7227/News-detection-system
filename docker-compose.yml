@@ -3,30 +3,24 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .                       # Project root — so model/ package is included
+      dockerfile: backend/Dockerfile
     container_name: fakenews_backend
     restart: always
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
-      - ./data:/app/data
-      - ./model:/app/model/artifacts
-      - ./uploads:/app/uploads
+      - backend_data:/data             # Persistent SQLite + uploads
+      - ./model/artifacts:/app/model/artifacts   # Dev: mount model artifacts live
       - ./reports:/app/reports
     environment:
       - ENVIRONMENT=development
       - DEBUG=true
-      - POSTGRES_SERVER=db
-      - REDIS_HOST=redis
+      - DATABASE_URL=sqlite:////data/fakenews.db
+      - UPLOAD_DIR=/data/uploads
       - MODEL_PATH=/app/model/artifacts
-      - UPLOAD_DIR=/app/uploads
     env_file:
       - .env
-    depends_on:
-      - db
-      - redis
 
   frontend:
     build:
@@ -35,37 +29,9 @@ services:
     container_name: fakenews_frontend
     restart: always
     ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - VITE_API_URL=http://localhost:8000/api/v1
+      - "80:80"                        # Nginx serves on port 80 in production build
     depends_on:
       - backend
 
-  db:
-    image: postgres:15-alpine
-    container_name: fakenews_db
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgrespassword
-      - POSTGRES_DB=fakenewsdb
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:7-alpine
-    container_name: fakenews_redis
-    restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-
 volumes:
-  postgres_data:
-  redis_data:
+  backend_data:
