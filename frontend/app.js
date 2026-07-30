@@ -2,7 +2,8 @@
 // Fake News Detector - Main Application Logic (Vanilla JS & API integrations)
 // ==============================================================================
 
-const API_BASE = '/api/v1';
+const API_BASE_URL =
+  "https://news-detection-system.onrender.com/api/v1";
 
 // App state management
 const state = {
