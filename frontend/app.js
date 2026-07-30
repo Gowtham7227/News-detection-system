@@ -2,8 +2,6 @@
 // Fake News Detector - Main Application Logic (Vanilla JS & API integrations)
 // ==============================================================================
 const API_BASE_URL = "https://news-detection-system.onrender.com/api/v1";
-const API_BASE_URL =
-  "https://news-detection-system.onrender.com/api/v1";
 
 // App state management
 const state = {
@@ -262,7 +260,7 @@ function clearFileSelection() {
 
 async function checkApiHealth() {
   try {
-    const response = await fetch('/health');
+    const response = await fetch(`${API_BASE_URL.replace("/api/v1","")}/health`);
     const data = await response.json();
     
     if (response.ok) {
