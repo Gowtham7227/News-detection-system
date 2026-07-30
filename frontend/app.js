@@ -264,7 +264,7 @@ async function checkApiHealth() {
 
     const response = await fetch(`${API_BASE_URL.replace("/api/v1", "")}/health`);
 
-    const response = await fetch(`${API_BASE_URL}/health`)
+
 
     const data = await response.json();
 
