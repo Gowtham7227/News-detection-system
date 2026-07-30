@@ -281,7 +281,7 @@ async function checkApiHealth() {
 
 async function loadModelInfo() {
   try {
-    const response = await fetch(`${API_BASE}/model-info`);
+    const response = await fetch(`${API_BASE_URL}/model-info`);
     if (!response.ok) throw new Error('Failed to load model details.');
     
     const info = await response.json();
@@ -299,7 +299,7 @@ async function loadModelInfo() {
 
 async function loadModelMetrics() {
   try {
-    const response = await fetch(`${API_BASE}/metrics`);
+    const response = await fetch(`${API_BASE_URL}/metrics`);
     if (!response.ok) {
       // Model might not be trained yet
       els.confusionMatrixFallback.classList.remove('d-none');
@@ -346,7 +346,7 @@ async function loadModelMetrics() {
 
 async function loadPredictionHistory() {
   try {
-    const url = `${API_BASE}/history?skip=${state.historyOffset}&limit=${state.historyLimit}`;
+    const url = `${API_BASE_URL}/history?skip=${state.historyOffset}&limit=${state.historyLimit}`;
     const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to load history logs.');
     
@@ -524,7 +524,7 @@ function setupEventHandlers() {
     els.predictBtnText.textContent = 'Analyzing Text...';
     
     try {
-      const response = await fetch(`${API_BASE}/predict`, {
+      const response = await fetch(`${API_BASE_URL}/predict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text })
@@ -563,7 +563,7 @@ function setupEventHandlers() {
     els.uploadBtnText.textContent = 'Parsing & Classifying...';
     
     try {
-      const response = await fetch(`${API_BASE}/upload`, {
+      const response = await fetch(`${API_BASE_URL}/upload`, {
         method: 'POST',
         body: formData
       });
@@ -590,7 +590,7 @@ function setupEventHandlers() {
     els.retrainBtnText.textContent = 'Retraining Pipeline...';
     
     try {
-      const response = await fetch(`${API_BASE}/retrain`, { method: 'POST' });
+      const response = await fetch(`${API_BASE_URL}/retrain`, { method: 'POST' });
       const data = await response.json();
       
       alert(data.message || 'Retraining triggered successfully.');
