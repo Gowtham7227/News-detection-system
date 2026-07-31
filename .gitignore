@@ -160,8 +160,8 @@ Thumbs.db
 !/data/raw/.gitkeep
 /data/processed/*
 !/data/processed/.gitkeep
-/model/artifacts/*
-!/model/artifacts/.gitkeep
+#/model/artifacts/*
+#!/model/artifacts/.gitkeep
 /uploads/*
 !/uploads/.gitkeep
 /reports/*
