@@ -1,8 +1,6 @@
-# ==============================================================================
 # Production-ready Dockerfile for FastAPI backend
 # Build context: project root (fake-news-detection-system/)
 # Usage: docker build -f backend/Dockerfile -t fake-news-backend .
-# ==============================================================================
 
 # Build stage
 FROM python:3.11-slim AS builder
